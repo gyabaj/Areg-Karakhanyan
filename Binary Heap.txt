@@ -1,0 +1,178 @@
+#include <iostream>
+using namespace std;
+
+template <typename T>
+class BH
+{
+private:
+    class Node
+    {
+    public:
+        T val{};
+        Node* left{};
+        Node* right{};
+        Node* parent{};
+        Node* beside{};
+
+    };
+    Node* head{};
+    Node* preLastStr{};
+public:
+    ~BH()
+    {
+        if (!head)
+            return;
+        Node* curr = preLastStr;
+        while (preLastStr)
+        {
+            if (curr->left)
+                delete curr->left;
+            if (curr->right) 
+                delete curr->right;
+            if (curr->beside)
+                curr = curr->beside;
+            else
+                curr = preLastStr = preLastStr->parent;
+        }
+        delete head;
+    }
+    void push_back(T val)
+    {
+        Node* adding = new Node;
+        adding->val = val;
+        if (!head)
+        {
+            head = adding;
+            preLastStr = head;
+            return;
+        }
+            Node* par = preLastStr;
+            Node* prePar = preLastStr;
+            while (1)
+            {
+                if (!par->left)
+                {
+                    par->left = adding;
+                    if (prePar != par)
+                        prePar->right->beside = adding;
+                    break;
+                }
+                else if (!par->right)
+                {
+                    par->right = adding;
+                    par->left->beside = adding;
+                    break;
+                }
+                else
+                {
+                    if (par->beside)
+                    {
+                        prePar = par;
+                        par = par->beside;
+                    }
+                    else
+                    {
+                        par = prePar = preLastStr = preLastStr->left;
+                        par->left = adding;
+                        break;
+                    }
+                }
+            }
+            adding->parent = par;
+            while (1)
+            {
+                
+                if (adding->val < par->val)
+                {
+                    swap(adding->val, par->val);
+                    adding = par;
+                    par = adding->parent;
+                }
+                else
+                    return;
+                if (!par)
+                    return;
+            }
+        
+    }
+    void printBH()
+    {
+        if (!head)
+            return;
+        Node* curr = head;
+        Node* currStr = head;
+        while (1)
+        {
+            cout << curr->val << " ";
+            if (curr->beside)
+                curr = curr->beside;
+            else if (currStr->left)
+                curr = currStr = currStr->left;
+            else 
+                return;
+        }
+    }
+    T pop()
+    {
+        T min = head->val;
+        if (!head->left)
+        {
+            delete head;
+            head = nullptr;
+            return min;
+        }
+        
+        Node* lastNode = preLastStr->left;
+        Node* preLastNode = preLastStr->left;
+        while (lastNode->beside)
+        {
+            preLastNode = lastNode;
+            lastNode = lastNode->beside;
+        }
+        swap(lastNode->val, head->val);
+        preLastNode->beside = nullptr;
+        if (lastNode == lastNode->parent->right)
+            lastNode->parent->right = nullptr;
+        else
+            lastNode->parent->left = nullptr;
+        min = lastNode->val;
+        delete lastNode;
+        if (!preLastStr->left && preLastStr != head)
+            preLastStr = preLastStr->parent;
+        Node* curr = head;
+        while (curr->left)
+        {
+            if (curr->right && curr->right->val < curr->val && curr->right->val < curr->left->val)
+            {
+                swap(curr->val, curr->right->val);
+                curr = curr->right;
+            }
+            else if (curr->left->val < curr->val)
+            {
+                swap(curr->val, curr->left->val);
+                curr = curr->left;
+            }
+            else
+                break;
+        }
+        return min;
+    }
+};
+
+int main()
+{
+    BH<int> bh{};
+    int n{};
+    cin >> n;
+    while (n--)
+    {
+        int val{};
+        cin >> val;
+        if (val)
+            bh.push_back(val);
+        else
+            bh.pop();
+    }
+    bh.printBH();
+       
+}

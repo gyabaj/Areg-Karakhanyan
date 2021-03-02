@@ -1,0 +1,129 @@
+#define _USE_MATH_DEFINES
+#include <iostream>
+#include <cmath>
+#include <vector>
+using namespace std;
+
+template <typename T>
+class Tree
+{
+private:
+    class Node
+    {
+    public:
+        Node() : val(T{}), left(nullptr), right(nullptr) {}
+        T val{};
+        Node* left{};
+        Node* right{};
+    };
+    int count{};
+    Node* head{};
+public:
+    Tree() : head(nullptr), count(0) {}
+    ~Tree()
+    {
+        Node* curr = head;
+        Node* prev = head;
+        while (head->left || head->right)
+        {
+            if (curr->left)
+            {
+                prev = curr;
+                curr = curr->left;
+            }
+            else if (curr->right)
+            {
+                prev = curr;
+                curr = curr->right;
+            }
+            else
+            {
+                if (curr == prev->left)
+                    prev->left = nullptr;
+                else if (curr == prev->right)
+                    prev->right = nullptr;
+                --count;
+                delete curr;
+                curr = head;
+            }
+        }
+        --count;
+        delete head;
+    }
+    void push_back(T val)
+    {
+        Node* temp = new Node;
+        temp->val = val;
+        if (!head)
+            head = temp;
+        else
+        {
+            Node* curr = head;
+            while (1)
+            {
+                if (val < curr->val)
+                    if (curr->left)
+                        curr = curr->left;
+                    else
+                    {
+                        curr->left = temp;
+                        break;
+                    }
+                else
+                    if (curr->right)
+                        curr = curr->right;
+                    else
+                    {
+                        curr->right = temp;
+                        break;
+                    }
+            }
+        }
+        ++count;
+    }
+    void printTree(Node* curr = nullptr)
+    {
+        if (!curr)
+            curr = head;
+        if (curr->left )
+            cout << '(';
+        if (!curr->left)
+        {
+            cout << "(-,"<< curr->val;
+            if (curr->right)
+            {
+                cout << ",";
+                printTree(curr->right);
+            }
+            else
+                cout << ",-";
+            cout << ')';
+            return;
+        }
+        else
+            printTree(curr->left);
+        cout << ',' << curr->val;
+        if (curr->right)
+        {
+            cout << ",";
+            printTree(curr->right);
+        }
+        else
+            cout << ",-)";
+        if (curr->left && curr->right)
+            cout << ')';
+    }
+};
+int main()
+{
+    Tree<int> tree{};
+    int n{};
+    cin >> n;
+    while (n--)
+    {
+        int temp{};
+        cin >> temp;
+        tree.push_back(temp);
+    }
+            tree.printTree();
+}

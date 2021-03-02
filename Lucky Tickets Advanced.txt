@@ -1,0 +1,87 @@
+#include <iostream>
+#include <stack>
+#include <string>
+#include <deque>
+using namespace std;
+
+deque<long long> arrSum(deque<long long> dq1, deque<long long> dq2)
+{
+    long long reminder{};
+    if (dq1.size() < dq2.size())
+        swap(dq1, dq2);
+    deque<long long> sum{};
+    for (int i = 0;i < dq1.size(); ++i)
+    {
+        long long frst = dq1[dq1.size() - (i + 1)];;
+        long long scnd{}; 
+        if (((int)dq2.size() - (i + 1)) >= 0)
+            scnd = dq2[dq2.size() - (i + 1)];
+        sum.push_front((frst + scnd + reminder) % 1000000000 );
+        reminder = (frst + scnd + reminder) / 1000000000;
+    }
+    if (reminder)
+        sum.push_front(reminder);
+    return sum;
+}
+deque<long long> arrPow(deque<long long> dq)
+{
+    deque<long long> sum{0};
+    for (int i = dq.size() - 1; i >= 0; --i)
+    {
+        long long reminder{};
+        deque<long long> Pow{};
+        for (int j = dq.size() - 1; j >= 0; --j)
+        {
+            Pow.push_front((dq[j] * dq[i] + reminder) % 1000000000);
+            reminder = (dq[j] * dq[i] + reminder) / 1000000000;
+        }
+        for (int j = (dq.size() - 1) - i; j > 0; --j)
+            Pow.push_back(0);
+        if (reminder)
+            Pow.push_front(reminder);
+        sum = arrSum(sum, Pow);
+    }
+    return sum;
+}
+int main()
+
+{
+    int allDigits{};
+    int b{};
+    cin >> allDigits >> b;
+    int n = allDigits / 2;
+    deque<deque<long long>> lastArr(((b - 1) * n) + 1);
+    for (int i = 0; i < ((b - 1) * n) + 1; ++i)
+      if(i < b)
+        lastArr[i].push_back(1);
+      else
+        lastArr[i].push_back(0);
+    for (int i = 0; i < n - 1; ++i)
+    {
+        deque<deque<long long>> arr(((b - 1) * n) + 1);
+        for (int j = 0; j < lastArr.size(); ++j)
+            for (int k = j; k > j - b; --k)
+            {
+                if (k >= 0)
+                    arr[j] = arrSum(lastArr[k], arr[j]);
+            }
+        lastArr = arr;
+    }
+    deque<long long> result{0};
+    for (auto el : lastArr)
+        result = arrSum(result, arrPow(el));
+    bool print = false;
+    for (auto el : result)
+    {
+        long long x = 100000000;
+        while (x)
+        {
+            if (el / x)
+                print = true;
+            if(print)
+              cout << el / x;
+            el %= x;
+            x /= 10;
+        }
+    }        
+}

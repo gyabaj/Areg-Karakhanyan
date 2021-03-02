@@ -1,0 +1,148 @@
+#include <iostream>
+#include <string>
+#include <vector>
+
+class g2048
+{
+private:
+    int matrix[4][4]{};
+    const int SIZE = 4;
+
+public:
+    void setMatrix()
+    {
+        for(int i = 0; i < SIZE; ++i)
+            for (int j = 0; j < SIZE; ++j)
+                std::cin >> matrix[i][j];
+    }
+    void printMatrix()
+    {
+        for (int i = 0; i < SIZE; ++i)
+        {
+            for (int j = 0; j < SIZE; ++j)
+                std::cout << matrix[i][j] << " ";
+            std::cout << "\n";
+        }
+    }
+    void down()
+    {
+        for(int k = 0; k < SIZE; ++k)
+           for (int i = SIZE - 1; i >= 0; --i)
+           {
+                if (matrix[i][k])
+                    for (int j = i; j < SIZE - 1; ++j)
+                        if (!matrix[j + 1][k])
+                            std::swap(matrix[j][k], matrix[j + 1][k]);
+           }
+        for (int k = 0; k < SIZE; ++k)
+          for (int i = SIZE - 1; i > 0; --i)
+              if (matrix[i][k] != 0 && matrix[i][k] == matrix[i - 1][k])
+              {
+                  matrix[i][k] += matrix[i - 1][k];
+                  for (int j = i - 1; j > 0; --j)
+                      matrix[j][k] = matrix[j - 1][k];
+                  matrix[0][k] = 0;
+              }    
+    }
+    void right()
+    {
+        for (int k = 0; k < SIZE; ++k)
+            for (int i = SIZE - 1; i >= 0; --i)
+            {
+                if (matrix[k][i])
+                    for (int j = i; j < SIZE - 1; ++j)
+                        if (!matrix[k][j + 1])
+                            std::swap(matrix[k][j], matrix[k][j + 1]);
+            }
+        for (int k = 0; k < SIZE; ++k)
+            for (int i = SIZE - 1; i > 0; --i)
+                if (matrix[k][i] != 0 && matrix[k][i] == matrix[k][i - 1] )
+                {
+                    matrix[k][i] += matrix[k][i - 1];
+                    for (int j = i - 1; j > 0; --j)
+                        matrix[k][j] = matrix[k][j - 1];
+                    matrix[k][0] = 0;
+                }
+    }
+    void up()
+    {
+        for (int k = 0; k < SIZE; ++k)
+            for (int i = 0; i < SIZE; ++i)
+            {
+                if (matrix[i][k])
+                    for (int j = i; j > 0; --j)
+                        if (!matrix[j - 1][k])
+                            std::swap(matrix[j][k], matrix[j - 1][k]);
+            }
+        for (int k = 0; k < SIZE; ++k)
+            for (int i = 0; i < SIZE - 1; ++i)
+                if (matrix[i][k] != 0 && matrix[i][k] == matrix[i + 1][k])
+                {
+                    matrix[i][k] += matrix[i + 1][k];
+                    for (int j = i + 1; j < SIZE - 1; ++j)
+                        matrix[j][k] = matrix[j + 1][k];
+                    matrix[SIZE - 1][k] = 0;
+                }
+    }
+    void left()
+    {
+        for (int k = 0; k < SIZE; ++k)
+            for (int i = 0; i < SIZE; ++i)
+            {
+                if (matrix[k][i])
+                    for (int j = i; j > 0; --j)
+                        if (!matrix[k][j - 1])
+                            std::swap(matrix[k][j], matrix[k][j - 1]);
+            }
+        for (int k = 0; k < SIZE; ++k)
+            for (int i = 0; i < SIZE - 1; ++i)
+                if (matrix[k][i] == matrix[k][i + 1] && matrix[k][i] != 0)
+                {
+                    matrix[k][i] += matrix[k][i + 1];
+                    for (int j = i + 1; j < SIZE - 1; ++j)
+                        matrix[k][j] = matrix[k][j + 1];
+                    matrix[k][SIZE - 1] = 0;
+                }
+    }
+    void countANDprint()
+    {
+        int max{};
+        for (int i = 0; i < SIZE * SIZE; ++i)
+            if (max < *(*matrix + i))
+                max = *(*matrix + i);
+        for (int j = 2; j <= max; j *= 2)
+        {
+            int counter{};
+            for (int i = 0; i < SIZE * SIZE; ++i)
+                if (j == *(*matrix + i))
+                    ++counter;
+            std::cout << counter << " ";
+        }
+    }
+};
+
+int main()
+{
+    g2048 game{};
+    game.setMatrix();
+    std::string str{};
+    std::cin.ignore();
+    std::getline(std::cin, str);
+
+    for(int i = 0; i < str.size(); i += 2)
+        switch (str[i])
+        {
+        case 'D':
+            game.down();
+            break;
+        case 'R':
+            game.right();
+            break;
+        case 'U':
+            game.up();
+            break;
+        case 'L':
+            game.left();
+        }
+    game.countANDprint();
+}

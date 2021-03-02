@@ -1,0 +1,61 @@
+#include<iostream>
+#include<string>
+#include<vector>
+#include<fstream>
+using namespace std;
+
+int main()
+{
+    ifstream input;
+    ofstream output;
+    string str{};
+    vector < pair<pair<long long, long long>, string>> data(199558);
+    vector<string> result{};
+    input.open("Text1.txt");
+    output.open("Text.txt");
+    for (int i = 0; i < 199558; ++i)
+        input >> data[i].first.first >> data[i].first.second >> data[i].second;
+
+    input.close();
+    int n{};
+    cin >> n;
+    while (n--)
+    {
+        long long val{};
+        cin >> str;
+        long long x36 = 1;
+        for (int j = str.size() - 1; j >= 0; --j)
+        {
+            if (str[j] >= '0' && str[j] <= '9')
+                val += (str[j] - '0') * x36;
+            else
+                val += (str[j] - 'a' + 10) * x36;
+            x36 *= 36;
+        }
+        int index = data.size() / 2;
+        int min{};
+        int max = data.size() - 1;
+        while (1)
+        {
+            if (data[index].first.first > val)
+            {
+                max = index;
+                index = (max - min) / 2 + min;
+            }
+            else if (data[index].first.first < val && data[index].first.second < val)
+            {
+                min = index;
+                index = (max - min) / 2 + min;
+            }
+            else if (data[index].first.first <= val && data[index].first.second >= val)
+            {
+                output << data[index].second ;
+                if (n)
+                    output << ' ';
+                break;
+            }
+        }
+    }
+    input.close();
+    output.close();
+}

@@ -1,0 +1,140 @@
+#include <iostream>
+#include <vector>
+
+class Cube
+{
+    std::vector<std::vector<int>> vct{ { 7,8,9,4,5,6,1,2,3 },
+                                       { 0,0,0,0,0,0,0,0,0 },
+                                       { 0,0,0,0,0,0,0,0,0 },
+                                       { 0,0,0,0,0,0,0,0,0 },
+                                       { 0,0,0,0,0,0,0,0,0 },
+                                       { 0,0,0,0,0,0,0,0,0 } };
+    void SpinAndMove(int side, int** arr1, int** arr2, int** arr3)
+    {
+        { // SPIN
+            int* arr1[4]{ &vct[side][0],&vct[side][2], &vct[side][8], &vct[side][6] };
+        int* arr2[4]{ &vct[side][1],&vct[side][5], &vct[side][7], &vct[side][3] };
+        int temp1 = *arr1[3];
+        int temp2 = *arr2[3];
+        for (int i = 0; i < 4; ++i)
+        {
+            std::swap(temp1, *arr1[i]);
+            std::swap(temp2, *arr2[i]);
+        }
+        }
+        {//MOVE
+            int temp1 = *arr1[3];
+            int temp2 = *arr2[3];
+            int temp3 = *arr3[3];
+            for (int i = 0; i < 4; ++i)
+            {
+                std::swap(temp1, *arr1[i]);
+                std::swap(temp2, *arr2[i]);
+                std::swap(temp3, *arr3[i]);
+            }
+        }
+    }
+public:
+    void right()
+    {
+        int* arr1[4]{ &vct[0][2],&vct[4][2],&vct[2][6],&vct[5][2] };
+        int* arr2[4]{ &vct[0][5],&vct[4][5],&vct[2][3],&vct[5][5] };
+        int* arr3[4]{ &vct[0][8],&vct[4][8],&vct[2][0],&vct[5][8] };
+        SpinAndMove(1, arr1, arr2, arr3);
+    }
+    void left()
+    {
+        int* arr1[4]{ &vct[0][0],&vct[5][0],&vct[2][8],&vct[4][0] };
+        int* arr2[4]{ &vct[0][3],&vct[5][3],&vct[2][5],&vct[4][3] };
+        int* arr3[4]{ &vct[0][6],&vct[5][6],&vct[2][2],&vct[4][6] };
+        SpinAndMove(3, arr1, arr2, arr3);
+    }
+    void down()
+    {
+        int* arr1[4]{ &vct[0][6],&vct[1][6],&vct[2][6],&vct[3][6] };
+        int* arr2[4]{ &vct[0][7],&vct[1][7],&vct[2][7],&vct[3][7] };
+        int* arr3[4]{ &vct[0][8],&vct[1][8],&vct[2][8],&vct[3][8] };
+        SpinAndMove(5, arr1, arr2, arr3);
+    }
+    void up()
+    {
+        int* arr1[4]{ &vct[0][0],&vct[3][0],&vct[2][0],&vct[1][0] };
+        int* arr2[4]{ &vct[0][1],&vct[3][1],&vct[2][1],&vct[1][1] };
+        int* arr3[4]{ &vct[0][2],&vct[3][2],&vct[2][2],&vct[1][2] };
+        SpinAndMove(4, arr1, arr2, arr3);
+    }
+    void front()
+    {
+        int* arr1[4]{ &vct[4][6],&vct[1][0],&vct[5][2],&vct[3][8] };
+        int* arr2[4]{ &vct[4][7],&vct[1][3],&vct[5][1],&vct[3][5] };
+        int* arr3[4]{ &vct[4][8],&vct[1][6],&vct[5][0],&vct[3][2] };
+        SpinAndMove(0, arr1, arr2, arr3);
+    }
+    void back()
+    {
+        int* arr1[4]{ &vct[4][2],&vct[3][0],&vct[5][6],&vct[1][8] };
+        int* arr2[4]{ &vct[4][1],&vct[3][3],&vct[5][7],&vct[1][5] };
+        int* arr3[4]{ &vct[4][0],&vct[3][6],&vct[5][8],&vct[1][2] };
+        SpinAndMove(2, arr1, arr2, arr3);
+    }
+    void printResult()
+    {
+        for(int i = 1; i < 10; ++i)
+          for(int k = 0; k < 6; ++k)
+             for(int j = 0; j < 9; ++j)
+                if(vct[k][j] == i)
+                    switch (k)
+                    {
+                    case 0:
+                        std::cout << "F ";
+                        break;
+                    case 1:
+                        std::cout << "R ";
+                        break;
+                    case 2:
+                        std::cout << "B ";
+                        break;
+                    case 3:
+                        std::cout << "L ";
+                        break;
+                    case 4:
+                        std::cout << "U ";
+                        break;
+                    case 5:
+                        std::cout << "D ";
+                    }
+    }
+};
+int main()
+{
+    Cube cube{};
+    int n{};
+    std::cin >> n;
+    for (int i = 0; i < n; ++i)
+    {
+        char symb{};
+        std::cin >> symb;
+        switch (symb)
+        {
+        case 'U': 
+            cube.up();
+            break;
+        case 'D':
+            cube.down();
+            break;
+        case 'F':
+            cube.front();
+            break;
+        case 'L':
+            cube.left();
+            break;
+        case 'R':
+            cube.right();
+            break;
+        case 'B':
+            cube.back();
+        }
+    }
+    cube.printResult();
+
+}

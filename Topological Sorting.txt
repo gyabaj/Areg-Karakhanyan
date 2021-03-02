@@ -1,0 +1,72 @@
+#include <iostream>
+#include <string>
+#include <deque>
+#include <stack>
+#include <set>
+using namespace std;
+
+
+int main()
+{
+    int n{};
+    cin >> n;
+    deque<pair<string, string>> nodes{};
+    set<string> first{};
+    stack<string> stk{};
+    set<string> st{};
+    deque<int> index{};
+    
+
+    while (n--)
+    {
+        nodes.push_front(pair<string, string>{});
+        cin >> nodes[0].first >> nodes[0].second;
+    }
+    for (int i = 0; i < nodes.size(); ++i)
+    {
+        bool single = true;
+        for (int j = 0; j < nodes.size(); ++j)
+            if (!nodes[i].first.compare(nodes[j].second))
+            {
+                single = false;
+                break;
+            }
+        if (single)
+            first.insert(nodes[i].first);    
+    }
+    while(nodes.size())
+    {
+        for (int i = 0; i < nodes.size(); ++i)
+        {
+            bool single = true;
+            for (int j = 0; j < nodes.size(); ++j)
+            {
+                if (!nodes[i].second.compare(nodes[j].first))
+                {
+                    single = false;
+                    break;
+                }
+            }
+
+            if (single)
+            {
+                st.insert(nodes[i].second);
+                index.push_front(i);
+            }
+        }
+        for (auto el : st)
+            stk.push(el);
+        st.clear();
+        for (auto el : index)
+            nodes.erase(nodes.begin() + el);
+        index.clear();
+    }
+    for (auto el : first)
+        stk.push(el);
+    while (!stk.empty())
+    {
+        cout << stk.top() << ' ';
+        stk.pop();
+    }
+    
+}
